@@ -1,8 +1,4 @@
-build
-lib
-dist
-marker.egg-info
-marker/.vscode
-marker
 jsconfig.json
-settings.json
+package-lock.json
+node_modules
+.vscode
