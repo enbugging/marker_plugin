@@ -1,5 +1,5 @@
 import PositionRank from "position_rank";
-//sw = require("stopword");
+const sw = require('stopword');
 
 function model_boldness(len, boldness = 1.0) {
     if (len <= 2) {
@@ -19,7 +19,8 @@ export function highlight(
     maximum_number_of_words = 40,
     token_window_size = 7,
     alpha = 0.15,
-    boldness_baseline = 0.2
+    boldness_baseline = 0.2,
+    removeStopwords = false
 ) {
     let importance_assigner = PositionRank(
         maximum_number_of_words,
@@ -28,6 +29,10 @@ export function highlight(
     );
     // Preprocessing text
     let preprocess_text = raw_text.split(" ").map((w, id) => {
+        if (removeStopwords)
+        {
+            w = sw.removeStopwords(w);
+        }
         return [
             id,
             w
