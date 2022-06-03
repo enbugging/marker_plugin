@@ -72,11 +72,18 @@ export function highlight(
         boldness_total_scores[i] /= number_of_scanned_frames;
     }
     normalization = Math.max(...boldness_total_scores);
-    boldness_total_scores = boldness_total_scores.map((x) => {
-        return (
-            (x / normalization) * (1 - boldness_baseline) + boldness_baseline
-        );
-    });
+    if (normalization !== 0)
+    {
+        boldness_total_scores = boldness_total_scores.map((x) => {
+            return (
+                (x / normalization) * (1 - boldness_baseline) + boldness_baseline
+            );
+        });
+    }
+    else
+    {
+        boldness_total_scores = Array(boldness_total_scores.length).fill(boldness_baseline);
+    }
     // Calculate boldness for each character
     let final_boldness = Array(raw_text.length).fill(0);
     let cnt = 0;
