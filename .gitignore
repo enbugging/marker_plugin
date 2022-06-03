@@ -1,0 +1,6 @@
+build
+lib
+dist
+marker.egg-info
+marker/.vscode
+marker
