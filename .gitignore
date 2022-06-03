@@ -4,3 +4,5 @@ dist
 marker.egg-info
 marker/.vscode
 marker
+jsconfig.jsconfig
+settings.json
