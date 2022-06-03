@@ -1,17 +1,22 @@
 {
-"manifest_version": 2,
-    "name": "[your extension name here]",
-    "description": "[your extension description here]",
-    "version": "0.1",
+    "manifest_version": 2,
+    "name": "Chrome Extension ES6 Import Test",
+    "version": "0.0.1",
+    "description": "Chrome Extension ES6 Import Test",
+    "author": "otiai10",
+    "background": {
+        "page": "src/html/background.html"
+    },
     "content_scripts": [
-        {
-            "matches": [
-                "*://*/*"
-            ],
-            "js": [
-                "content.js"
-            ],
-            "run_at": "document_end"
-        }
+      {
+        "matches": ["<all_urls>"],
+        "js": ["src/js/content_script.js"]
+      }
+    ],
+    "permissions": [
+      "<all_urls>"
+    ],
+    "web_accessible_resources": [
+      "src/js/*"
     ]
 }
