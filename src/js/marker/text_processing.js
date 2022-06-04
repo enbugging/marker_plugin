@@ -6,10 +6,13 @@ function model_boldness(len, boldness = 1.0) {
         return [...Array(len)].map((x) => boldness);
     }
     len -= 1;
+    let b = 0.25,
+        c = (1.0 - b) * 2,
+        d = 1 - c;
     let a = Math.floor(len / 2);
     let result = Array(len + 1).fill(0);
     for (let i = 0; i <= len; i++) {
-        result[i] = (Math.max(i, len - i) / len) * boldness;
+        result[i] = ((Math.max(i, len - i) * c) / len + d) * boldness;
     }
     return result;
 }

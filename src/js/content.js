@@ -24,7 +24,7 @@ function extractToDiv(node) {
     highlight(node.nodeValue)
         .map((c) => {
             const boldness = Math.floor(255 - c[1] * 255);
-            //console.log(c[1], boldness);
+            //console.log(c[0], c[1], boldness);
             const span = document.createElement("span");
             span.setAttribute("class", highlightAttr);
             span.setAttribute(
