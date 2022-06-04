@@ -157,7 +157,6 @@ class PositionRank extends ReadingFrame {
         if (this.number_of_words_scanned <= 1) {
             return Array(this.number_of_words_scanned).fill(1.0);
         }
-        console.log(this.words_to_labels);
         let id_to_word = Object.keys(this.words_to_labels).map((w) => {
             return [this.word_first_label(w), w];
         });

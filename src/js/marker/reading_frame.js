@@ -39,7 +39,6 @@ class ReadingFrame {
     }
 
     word_first_label(word) {
-        //console.log(word, this.words_to_labels[word]);
         return word == word &&
             typeof word !== undefined &&
             word in this.words_to_labels

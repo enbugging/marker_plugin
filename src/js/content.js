@@ -10,15 +10,33 @@ function textNodesUnder(el) {
     return a;
 }
 
+function standardize_color(str) {
+    var ctx = document.createElement("canvas").getContext("2d");
+    ctx.fillStyle = str;
+    return ctx.fillStyle;
+}
+
 function extractToDiv(node) {
     const g = document.createElement("span");
+    //let color = node.parentElement.style.color;
+    //console.log("Color: " + color + " " + standardize_color(color));
     g.setAttribute("class", highlightAttr);
-    console.log(node.parentElement);
     highlight(node.nodeValue)
         .map((c) => {
+            const boldness = Math.floor(255 - c[1] * 255);
+            //console.log(c[1], boldness);
             const span = document.createElement("span");
             span.setAttribute("class", highlightAttr);
-            span.setAttribute("style", "color:;");
+            span.setAttribute(
+                "style",
+                "color:rgb(" +
+                    boldness +
+                    ", " +
+                    boldness +
+                    ", " +
+                    boldness +
+                    ");"
+            );
             span.appendChild(document.createTextNode(c[0]));
             return span;
         })
