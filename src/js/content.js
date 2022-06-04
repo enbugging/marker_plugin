@@ -1,6 +1,6 @@
 import highlight from "./marker/text_processing.js";
 
-const highlightAttr = "highlighted----";
+const highlightAttr = "highlighted----"; //btoa(Math.random()).slice(5)
 
 function textNodesUnder(el) {
     var n,
