@@ -46,7 +46,7 @@ class PositionRank extends ReadingFrame {
         let previous_id = this.current_position;
         let word_to_pop = this.labels_to_words[previous_id];
         let old_label_word_to_pop = this.word_first_label(word_to_pop);
-        if (this.isFull()) {
+        if (super.isFull()) {
             /*
             If the reading frame is complete, we would need 
             to pop the leftmost word from the frame.
@@ -81,7 +81,7 @@ class PositionRank extends ReadingFrame {
         super.append(word);
         let new_label_word_to_push = this.word_first_label(word);
 
-        if (this.isFull()) {
+        if (super.isFull()) {
             // If the old word still occurs, we need to transfer adjacency list to the new label
             let new_label_word_to_pop = this.word_first_label(word_to_pop);
             if (new_label_word_to_pop == new_label_word_to_pop) {
@@ -106,7 +106,7 @@ class PositionRank extends ReadingFrame {
             }
         }
         // Push the new word
-        if (this.isFull()) {
+        if (super.isFull()) {
             this.update_weights(
                 new_label_word_to_push,
                 previous_id - this.token_window_size + 1,
@@ -182,7 +182,7 @@ class PositionRank extends ReadingFrame {
                 word_to_id[this.word_first_label(this.labels_to_words[i])]
             ];
         });
-        if (this.isFull()) {
+        if (super.isFull()) {
             let rotate = this.maximum_number_of_words - this.current_position;
             rotate -=
                 boldness_scores.length *

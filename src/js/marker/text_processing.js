@@ -22,7 +22,7 @@ function highlight(
     boldness_baseline = 0.2,
     removeStopwords = false
 ) {
-    let importance_assigner = PositionRank(
+    let importance_assigner = new PositionRank(
         maximum_number_of_words,
         token_window_size,
         alpha
@@ -53,7 +53,8 @@ function highlight(
     }
 
     let boldness_total_scores = Array(preprocess_text.length).fill(0);
-    for (let [position, word] in enumerate(clean_text)) {
+    clean_text.map((x) => {
+        var position = x[0], word = x[1];
         importance_assigner.append(word);
         let offset = max(0, position - maximum_number_of_words);
         let boldness_scores = importance_assigner.extract_boldness();
@@ -61,7 +62,7 @@ function highlight(
             boldness_total_scores[clean_text[i + offset]] +=
                 boldness_scores[i] * boldness_scores.length;
         }
-    }
+    })
 
     // Normalization
     for (let i = 0; i <= boldness_total_scores.length; i++) {
