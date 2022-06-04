@@ -1,13 +1,12 @@
 import PositionRank from "./position_rank.js";
 //const sw = require('stopword');
 
-function model_boldness(len, boldness = 1.0) {
+function model_boldness(len, boldness = 1.0, boldness_baseline) {
     if (len <= 2) {
         return [...Array(len)].map((x) => boldness);
     }
     len -= 1;
-    let b = 0.25,
-        c = (1.0 - b) * 2,
+    let c = (1.0 - boldness_baseline) * 2,
         d = 1 - c;
     let a = Math.floor(len / 2);
     let result = Array(len + 1).fill(0);
@@ -22,7 +21,7 @@ function highlight(
     maximum_number_of_words = 40,
     token_window_size = 7,
     alpha = 0.15,
-    boldness_baseline = 0.0,
+    boldness_baseline = 0.2,
     removeStopwords = false
 ) {
     let importance_assigner = new PositionRank(
@@ -95,7 +94,11 @@ function highlight(
             final_boldness[i] = [" ", boldness_baseline];
         for (let i = 0; i < words_length.length; i++) {
             let length = words_length[i];
-            let boldness = model_boldness(length, boldness_total_scores[i]);
+            let boldness = model_boldness(
+                length,
+                boldness_total_scores[i],
+                boldness_baseline
+            );
             preprocess_text[i].split("").forEach((c, j) => {
                 final_boldness[cnt + j] = [c, boldness[j]];
             });
