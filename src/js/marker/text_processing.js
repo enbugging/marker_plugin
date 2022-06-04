@@ -7,11 +7,11 @@ function model_boldness(len, boldness = 1.0) {
     }
     len -= 1;
     let a = Math.floor(len / 2);
-    let result = Array(len).fill(0);
-    for (let i = 0; i < len; i++) {
-        result[i] = (max(i, len - i) / len) * boldness;
+    let result = Array(len + 1).fill(0);
+    for (let i = 0; i <= len; i++) {
+        result[i] = (Math.max(i, len - i) / len) * boldness;
     }
-    return boldness;
+    return result;
 }
 
 function highlight(
@@ -28,71 +28,77 @@ function highlight(
         alpha
     );
     // Preprocessing text
-    let preprocess_text = raw_text.split(" ").map((w, id) => {
-        //if (removeStopwords)
-        //{
-        //    w = sw.removeStopwords(w);
-        //}
-        return [
-            id,
-            w
-                // Removing punctuation
-                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-                // Remove duplicate space
-                .replace(/\s{2,}/g, " "),
-        ];
-    });
-    let words_length = preprocess_text.map((w) => {
-        return w.length;
+    let preprocess_text = raw_text.split(" ");
+    let word_lists = preprocess_text
+        .map((w, id) => {
+            //if (removeStopwords)
+            //{
+            //    w = sw.removeStopwords(w);
+            //}
+            return [
+                id,
+                w
+                    // Removing punctuation
+                    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+                    // Remove duplicate space
+                    .replace(/\s{2,}/g, " "),
+            ];
+        })
+        .filter((w) => /[^\s\n]+/.test(w[0]));
+    let words_length = word_lists.map((w) => {
+        return w[1].length;
     });
     let clean_text = [];
-    for (let i = 0; i < preprocess_text.length; i++) {
-        if (/[a-zA-Z0-9]/.test(preprocess_text[i][1])) {
-            clean_text.push(preprocess_text[i]);
+    for (let i = 0; i < word_lists.length; i++) {
+        if (/[a-zA-Z0-9]/.test(word_lists[i][1])) {
+            clean_text.push(word_lists[i]);
         }
     }
 
-    let boldness_total_scores = Array(preprocess_text.length).fill(0);
+    let boldness_total_scores = Array(word_lists.length).fill(0);
     clean_text.map((x) => {
-        var position = x[0], word = x[1];
+        var position = x[0],
+            word = x[1];
         importance_assigner.append(word);
-        let offset = max(0, position - maximum_number_of_words);
+        let offset = Math.max(0, position - maximum_number_of_words);
         let boldness_scores = importance_assigner.extract_boldness();
         for (let i = 0; i < boldness_scores.length; i++) {
             boldness_total_scores[clean_text[i + offset]] +=
                 boldness_scores[i] * boldness_scores.length;
         }
-    })
-
+    });
     // Normalization
-    for (let i = 0; i <= boldness_total_scores.length; i++) {
-        let i = (number_of_scanned_frames =
-            i >= boldness_total_scores.length
+    for (let i = 0; i < boldness_total_scores.length; i++) {
+        let number_of_scanned_frames =
+            i >= boldness_total_scores.length - maximum_number_of_words
                 ? boldness_total_scores.length - i
-                : maximum_number_of_words);
+                : maximum_number_of_words;
         boldness_total_scores[i] /= number_of_scanned_frames;
     }
-    normalization = Math.max(...boldness_total_scores);
-    if (normalization !== 0)
-    {
+    let normalization = Math.max(...boldness_total_scores);
+    if (normalization !== 0) {
         boldness_total_scores = boldness_total_scores.map((x) => {
             return (
-                (x / normalization) * (1 - boldness_baseline) + boldness_baseline
+                (x / normalization) * (1 - boldness_baseline) +
+                boldness_baseline
             );
         });
-    }
-    else
-    {
-        boldness_total_scores = Array(boldness_total_scores.length).fill(boldness_baseline);
+    } else {
+        boldness_total_scores = Array(boldness_total_scores.length).fill(
+            boldness_baseline
+        );
     }
     // Calculate boldness for each character
     let final_boldness = Array(raw_text.length).fill(0);
     let cnt = 0;
-    for (let i = 0; i < words_length.length; i++)
-    {
+    for (let i = 0; i < words_length.length; i++) {
         let length = words_length[i];
-        final_boldness.slice(cnt, cnt + length) = model_boldness(length, boldness_total_scores[i]);
-        cnt++;
+        let boldness = model_boldness(length, boldness_total_scores[i]);
+        preprocess_text[i].split("").forEach((c, j) => {
+            final_boldness[cnt + j] = [c, boldness[j]];
+        });
+        final_boldness[cnt + length] = [" ", 0.0];
+        cnt += length + 1;
     }
     return final_boldness;
 }

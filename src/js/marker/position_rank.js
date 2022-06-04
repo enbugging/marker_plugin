@@ -20,8 +20,13 @@ class PositionRank extends ReadingFrame {
                 let temporary_label = this.word_first_label(
                     this.labels_to_words[i]
                 );
-                this.weight[label][temporary_label] += change;
-                this.weight[temporary_label][label] += change;
+                if (
+                    typeof temporary_label !== undefined &&
+                    temporary_label === temporary_label
+                ) {
+                    this.weight[label][temporary_label] += change;
+                    this.weight[temporary_label][label] += change;
+                }
             }
         } else {
             right_lim -= this.maximum_number_of_words;
@@ -29,15 +34,25 @@ class PositionRank extends ReadingFrame {
                 let temporary_label = this.word_first_label(
                     this.labels_to_words[i]
                 );
-                this.weight[label][temporary_label] += change;
-                this.weight[temporary_label][label] += change;
+                if (
+                    typeof temporary_label !== undefined &&
+                    temporary_label === temporary_label
+                ) {
+                    this.weight[label][temporary_label] += change;
+                    this.weight[temporary_label][label] += change;
+                }
             }
             for (let i = 0; i < right_lim; i++) {
                 let temporary_label = this.word_first_label(
                     this.labels_to_words[i]
                 );
-                this.weight[label][temporary_label] += change;
-                this.weight[temporary_label][label] += change;
+                if (
+                    typeof temporary_label !== undefined &&
+                    temporary_label === temporary_label
+                ) {
+                    this.weight[label][temporary_label] += change;
+                    this.weight[temporary_label][label] += change;
+                }
             }
         }
     }
@@ -46,35 +61,40 @@ class PositionRank extends ReadingFrame {
         let previous_id = this.current_position;
         let word_to_pop = this.labels_to_words[previous_id];
         let old_label_word_to_pop = this.word_first_label(word_to_pop);
-        if (super.isFull()) {
-            /*
+        if (
+            typeof old_label_word_to_pop !== undefined &&
+            old_label_word_to_pop === old_label_word_to_pop
+        ) {
+            if (super.isFull()) {
+                /*
             If the reading frame is complete, we would need 
             to pop the leftmost word from the frame.
             */
-            // Pop the old word
-            if (
-                this.number_of_words_scanned >=
-                2 * this.maximum_number_of_words
-            ) {
-                this.update_weights(
-                    old_label_word_to_pop,
-                    previous_id - this.token_window_size + 1,
-                    previous_id,
-                    -1
-                );
-                this.update_weights(
-                    old_label_word_to_pop,
-                    previous_id + 1,
-                    previous_id + this.token_window_size,
-                    -1
-                );
-            } else {
-                this.update_weights(
-                    old_label_word_to_pop,
-                    max(previous_id - this.token_window_size + 1, 0),
-                    previous_id,
-                    -1
-                );
+                // Pop the old word
+                if (
+                    this.number_of_words_scanned >=
+                    2 * this.maximum_number_of_words
+                ) {
+                    this.update_weights(
+                        old_label_word_to_pop,
+                        previous_id - this.token_window_size + 1,
+                        previous_id,
+                        -1
+                    );
+                    this.update_weights(
+                        old_label_word_to_pop,
+                        previous_id + 1,
+                        previous_id + this.token_window_size,
+                        -1
+                    );
+                } else {
+                    this.update_weights(
+                        old_label_word_to_pop,
+                        Math.max(previous_id - this.token_window_size + 1, 0),
+                        previous_id,
+                        -1
+                    );
+                }
             }
         }
         let old_label_word_to_push = this.word_first_label(word);
@@ -84,7 +104,10 @@ class PositionRank extends ReadingFrame {
         if (super.isFull()) {
             // If the old word still occurs, we need to transfer adjacency list to the new label
             let new_label_word_to_pop = this.word_first_label(word_to_pop);
-            if (new_label_word_to_pop == new_label_word_to_pop) {
+            if (
+                typeof new_label_word_to_pop !== undefined &&
+                new_label_word_to_pop == new_label_word_to_pop
+            ) {
                 for (let i = 0; i < this.maximum_number_of_words; i++) {
                     this.weight[new_label_word_to_pop][i] =
                         this.weight[old_label_word_to_pop][i];
@@ -95,8 +118,9 @@ class PositionRank extends ReadingFrame {
         }
 
         if (
-            old_label_word_to_push != new_label_word_to_push &&
-            old_label_word_to_pop == old_label_word_to_push
+            typeof old_label_word_to_push !== undefined &&
+            old_label_word_to_push == old_label_word_to_push &&
+            old_label_word_to_push != new_label_word_to_push
         ) {
             for (let i = 0; i < this.maximum_number_of_words; i++) {
                 this.weight[new_label_word_to_push][i] =
@@ -122,7 +146,7 @@ class PositionRank extends ReadingFrame {
         } else {
             this.update_weights(
                 new_label_word_to_push,
-                max(previous_id - this.token_window_size + 1, 0),
+                Math.max(previous_id - this.token_window_size + 1, 0),
                 previous_id,
                 1
             );
@@ -130,19 +154,20 @@ class PositionRank extends ReadingFrame {
     }
 
     extract_boldness() {
-        if (this.number_of_words_scanned == 1) {
-            return [1.0];
+        if (this.number_of_words_scanned <= 1) {
+            return Array(this.number_of_words_scanned).fill(1.0);
         }
-        let id_to_word = this.words_to_labels.keys().map((w) => {
+        console.log(this.words_to_labels);
+        let id_to_word = Object.keys(this.words_to_labels).map((w) => {
             return [this.word_first_label(w), w];
         });
         let number_of_distinct_words = id_to_word.length;
         let word_to_id = {};
-        for (const w of id_to_word) {
-            word_to_id[id_to_word[i][0]] = i;
-        }
+        id_to_word.forEach((w, i) => {
+            word_to_id[w[0]] = i;
+        });
 
-        number_of_words = min(
+        let number_of_words = Math.min(
             this.maximum_number_of_words,
             this.number_of_words_scanned
         );

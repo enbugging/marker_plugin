@@ -13,13 +13,13 @@ function textNodesUnder(el) {
 function extractToDiv(node) {
     const g = document.createElement("span");
     g.setAttribute("class", highlightAttr);
-    node.nodeValue
-        .split("")
+    console.log(node.parentElement);
+    highlight(node.nodeValue)
         .map((c) => {
             const span = document.createElement("span");
             span.setAttribute("class", highlightAttr);
-            span.setAttribute("style", "color: aquamarine;");
-            span.appendChild(document.createTextNode(c));
+            span.setAttribute("style", "color:;");
+            span.appendChild(document.createTextNode(c[0]));
             return span;
         })
         .forEach((span) => g.appendChild(span));

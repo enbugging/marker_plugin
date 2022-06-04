@@ -39,8 +39,11 @@ class ReadingFrame {
     }
 
     word_first_label(word) {
-        return word == word && word != null && word in this.words_to_labels
-            ? this.words_to_labels[word][0]
+        //console.log(word, this.words_to_labels[word]);
+        return word == word &&
+            typeof word !== undefined &&
+            word in this.words_to_labels
+            ? this.words_to_labels[word].peek()
             : NaN;
     }
 
@@ -50,12 +53,12 @@ class ReadingFrame {
         if (this.isFull()) {
             let previous_word = this.labels_to_words[this.current_position];
             this.words_to_labels[previous_word].dequeue();
-            if (this.words_to_labels[previous_word].isEmpty()) {
+            if (this.words_to_labels[previous_word].isEmpty) {
                 delete this.words_to_labels[previous_word];
             }
         }
 
-        if (word in this.words_to_labels) {
+        if (!(word in this.words_to_labels)) {
             this.words_to_labels[word] = new Queue();
         }
         this.words_to_labels[word].enqueue(this.current_position);
