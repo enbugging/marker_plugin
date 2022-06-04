@@ -1,5 +1,33 @@
 import highlight from "./marker/text_processing.js";
 
+class MutationObserverUnobservable extends MutationObserver {
+    constructor(callback) {
+        super(callback);
+        this.observerTargets = [];
+    }
+
+    observe(target, options) {
+        if (options === undefined) {
+            this.observerTargets.push({ target });
+            return super.observe(target);
+        } else {
+            this.observerTargets.push({ target, options });
+            return super.observe(target, options);
+        }
+    }
+
+    unobserve(target) {
+        const newObserverTargets = this.observerTargets.filter(
+            (ot) => ot.target !== target
+        );
+        this.observerTargets = [];
+        this.disconnect();
+        newObserverTargets.forEach((ot) => {
+            this.observe(ot.target, ot.options);
+        });
+    }
+}
+
 const highlightAttr = "highlighted----";
 
 function textNodesUnder(el) {
@@ -70,7 +98,7 @@ export function main() {
     };
 
     // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
+    const observer = new MutationObserverUnobservable(callback);
     // Start observing the target node for configured mutations
     observer.observe(document, {
         childList: true,
