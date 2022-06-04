@@ -53,19 +53,19 @@ export function main() {
         // Use traditional 'for loops' for IE 11
         for (const mutation of mutationsList) {
             if (mutation.type === "childList") {
-                mutation.addNodes
+                Array.prototype.slice
+                    .call(mutation.addedNodes)
                     .filter(
                         (node) =>
-                            node.classList !== undefined &&
+                            node.classList === undefined ||
                             !node.classList.contains(highlightAttr)
                     )
-                    .map((x) => {
-                        console.log("Updating", mutation.target);
-                        return x;
-                    })
+                    //.map((x) => {
+                    //    console.log("Updating", x);
+                    //    return x;
+                    //})
                     .forEach(applyHighlight);
             }
-            // mutation of us -> continue
         }
     };
 
