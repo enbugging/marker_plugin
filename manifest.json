@@ -1,8 +1,8 @@
 {
-    "manifest_version": 2,
-    "name": "Chrome Extension ES6 Import Test",
+    "manifest_version": 1,
+    "name": "Marker",
     "version": "0.0.1",
-    "description": "Chrome Extension ES6 Import Test",
+    "description": "A plugin to highlight text in a particular way to help improving readability, especially for dyslexia condition",
     "author": "otiai10",
     "background": {
         "page": "src/html/background.html"
