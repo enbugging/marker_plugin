@@ -17,44 +17,20 @@ function textNodesUnder(el) {
             (node.parentElement.classList === undefined ||
                 !node.parentElement.classList.contains(highlightAttr))
         ) {
-            console.log(
-                "Updating",
-                node.parentElement,
-                node.parentElement.classList
-            );
             a.push(node);
         }
     }
     return a;
 }
 
-function standardize_color(str) {
-    var ctx = document.createElement("canvas").getContext("2d");
-    ctx.fillStyle = str;
-    return ctx.fillStyle;
-}
-
 function extractToDiv(node) {
     const g = document.createElement("span");
-    //let color = node.parentElement.style.color;
-    //console.log("Color: " + color + " " + standardize_color(color));
     g.setAttribute("class", highlightAttr);
     highlight(node.nodeValue)
         .map((c) => {
-            const boldness = Math.floor(255 - c[1] * 255);
-            //console.log(c[0], c[1], boldness);
             const span = document.createElement("span");
             span.setAttribute("class", highlightAttr);
-            span.setAttribute(
-                "style",
-                "color:rgb(" +
-                    boldness +
-                    ", " +
-                    boldness +
-                    ", " +
-                    boldness +
-                    ");"
-            );
+            span.setAttribute("style", "opacity:" + c[1]);
             span.appendChild(document.createTextNode(c[0]));
             return span;
         })
@@ -88,10 +64,6 @@ export function main() {
                             node.classList === undefined ||
                             !node.classList.contains(highlightAttr)
                     )
-                    //.map((x) => {
-                    //    console.log("Updating", x);
-                    //    return x;
-                    //})
                     .forEach(applyHighlight);
             }
         }
