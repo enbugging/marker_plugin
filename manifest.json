@@ -1,5 +1,5 @@
 {
-    "manifest_version": 1,
+    "manifest_version": 2,
     "name": "Marker",
     "version": "0.0.1",
     "description": "A plugin to highlight text in a particular way to help improving readability, especially for dyslexia condition",
