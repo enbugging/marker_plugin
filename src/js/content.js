@@ -3,10 +3,28 @@ import highlight from "./marker/text_processing.js";
 const highlightAttr = "highlighted----"; //btoa(Math.random()).slice(5)
 
 function textNodesUnder(el) {
-    var n,
+    var node,
         a = [],
         walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
-    while ((n = walk.nextNode())) a.push(n);
+    while ((node = walk.nextNode())) {
+        if (
+            node.nodeValue &&
+            /[^\s\n]+/.test(node.nodeValue) &&
+            node.parentElement.tagName !== "IFRAME" &&
+            node.parentElement.tagName !== "CODE" &&
+            node.parentElement.tagName !== "SCRIPT" &&
+            node.parentElement.tagName !== "STYLE" &&
+            (node.parentElement.classList === undefined ||
+                !node.parentElement.classList.contains(highlightAttr))
+        ) {
+            console.log(
+                "Updating",
+                node.parentElement,
+                node.parentElement.classList
+            );
+            a.push(node);
+        }
+    }
     return a;
 }
 
@@ -46,18 +64,10 @@ function extractToDiv(node) {
 
 function applyHighlight(doc) {
     const elements = Array.from(textNodesUnder(doc));
-    const divElements = elements
-        .filter(
-            (node) =>
-                node.nodeValue &&
-                /[^\s\n]+/.test(node.nodeValue) &&
-                node.parentElement.tagName !== "SCRIPT" &&
-                node.parentElement.tagName !== "STYLE"
-        )
-        .map((node) => ({
-            node,
-            newDiv: extractToDiv(node),
-        }));
+    const divElements = elements.map((node) => ({
+        node,
+        newDiv: extractToDiv(node),
+    }));
 
     divElements.forEach(({ node, newDiv }) => {
         if (node.parentNode) node.parentNode.replaceChild(newDiv, node);
