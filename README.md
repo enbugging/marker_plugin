@@ -1,1 +1,1 @@
-This is your Chrome extension which replaces a word or phrase with a different word or phrase. 
+A small Chrome extension wrapped around the Marker python package, which was translated to Javascript. For the original Python source, see the repository Marker.
